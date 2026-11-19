@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turnly Demo</title>
+<style>
+:root{
+ --teal:#028090;--teal2:#016D7B;--tealdk:#08384B;--mint:#02C39A;--mintbg:#DCF7EF;--navy:#0D2137;
+ --bg:#F2F7F8;--surface:#FFFFFF;--surface2:#F5F9FA;--soft:#E3F3F5;--ink:#0D2137;--muted:#6A7A88;--line:#E1EBEE;
+ --amber:#9A5B00;--amberbg:#FFF1D9;--red:#C2362F;--redbg:#FDE2E2;--blue:#1F4FD1;--bluebg:#E8EEFD;--violet:#6B3FC2;--violetbg:#F0EAFC;--tealink:#027A72;--tealbg:#DCF7EF;
+ --shadow:0 2px 6px rgba(13,33,55,.05),0 10px 30px rgba(13,33,55,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#081A24;--surface:#10283A;--surface2:#0D2231;--soft:#123848;--ink:#E6F0F2;--muted:#9AB0BC;--line:#1E3B4D;--amberbg:#3A2C10;--amber:#F2B451;--redbg:#3A1715;--red:#FF8A80;--bluebg:#1A2A55;--blue:#8FB0FF;--violetbg:#2C1F4D;--violet:#C3A6FF;--tealbg:#0F3A33;--tealink:#3DDBB3;--mintbg:#0F3A33;--shadow:none}}
+:root[data-theme="dark"]{--bg:#081A24;--surface:#10283A;--surface2:#0D2231;--soft:#123848;--ink:#E6F0F2;--muted:#9AB0BC;--line:#1E3B4D;--amberbg:#3A2C10;--amber:#F2B451;--redbg:#3A1715;--red:#FF8A80;--bluebg:#1A2A55;--blue:#8FB0FF;--violetbg:#2C1F4D;--violet:#C3A6FF;--tealbg:#0F3A33;--tealink:#3DDBB3;--mintbg:#0F3A33;--shadow:none}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;line-height:1.25}h2{font-size:19px;font-weight:800}h3{font-size:16px;font-weight:800}
+.muted{color:var(--muted)}.small{font-size:13px}.tiny{font-size:12px}.mt{margin-top:16px}.mt8{margin-top:8px}.center{text-align:center}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.row .sp,.sp{flex:1}.nowrap{flex-wrap:nowrap;gap:6px}
+.grid{display:grid;gap:16px}.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.g2.wide{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px}
+/* brand */
+.word{font-weight:800;letter-spacing:-.02em;color:#fff;font-size:22px}.word em{font-style:normal;color:var(--mint)}
+.word.xl{font-size:64px;line-height:1}
+.logo{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);flex:none}
+.logo svg{width:76%;height:76%}.logo.sm{width:32px;height:32px;border-radius:10px}.logo.big{width:110px;height:110px;border-radius:30px}
+.tag{letter-spacing:.32em;font-size:12px;color:rgba(255,255,255,.6);font-weight:600}
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:linear-gradient(90deg,#08384B,#028090);color:#fff;display:flex;align-items:center;gap:10px;padding:9px 18px}
+.top .word{font-size:20px}.demo-tag{font-size:11px;font-weight:800;letter-spacing:.08em;background:rgba(255,255,255,.14);padding:2px 8px;border-radius:999px;text-transform:uppercase}
+.clock{font-size:13px;color:rgba(255,255,255,.7)}
+.tbtn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:700}
+.tbtn:hover{background:rgba(255,255,255,.2)}
+.who{font-size:13px;text-align:right;line-height:1.25;font-weight:700}.who small{display:block;color:rgba(255,255,255,.65);font-weight:500}
+.demo-banner{background:var(--mint);color:#0D2137;font-size:12.5px;font-weight:700;text-align:center;padding:5px 16px}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:12px;padding:10px 16px;font-weight:800;cursor:pointer;background:var(--teal);color:#fff;font-size:14px}
+.btn.mint{background:var(--mint);color:#06302A;box-shadow:0 6px 18px rgba(2,195,154,.25)}
+.btn.alt{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.warn{background:var(--redbg);color:var(--red);border:1px solid #F7B4B4}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:10px}.btn.block{width:100%}
+.btn:disabled,button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,.inp:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.p-teal{background:var(--tealbg);color:var(--tealink)}.p-amber{background:var(--amberbg);color:var(--amber)}.p-red{background:var(--redbg);color:var(--red)}.p-blue{background:var(--bluebg);color:var(--blue)}.p-grey{background:var(--surface2);color:var(--muted);border:1px solid var(--line)}.p-violet{background:var(--violetbg);color:var(--violet)}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+.inp{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;font-weight:500;width:100%;min-width:0}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer}.chk input{width:18px;height:18px;margin-top:2px;accent-color:var(--teal);flex:none}
+.err{color:var(--red);font-size:13px;font-weight:700;min-height:1em}
+code{background:rgba(255,255,255,.14);border-radius:6px;padding:1px 6px;font-size:13px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}th{font-size:12px;color:var(--muted);font-weight:800;background:var(--surface2)}.tw{overflow-x:auto}
+/* landing */
+.landing{min-height:calc(100vh - 80px);background:linear-gradient(160deg,#028090 0%,#016D7B 45%,#08384B 100%);color:#fff;padding:40px 18px 60px}
+.land-in{max-width:880px;margin:0 auto}.hero{text-align:center}.hero .logo{margin-bottom:18px}.hero .tag{margin-top:10px}
+.hero p{max-width:560px;margin:18px auto 0;color:rgba(255,255,255,.85);font-size:16px}
+.roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:30px}
+.role{text-align:left;cursor:pointer;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:20px;padding:16px;color:#fff;display:flex;flex-direction:column;gap:4px}
+.role.on{background:rgba(255,255,255,.18);border-color:var(--mint);box-shadow:0 0 0 4px rgba(2,195,154,.25)}
+.role .ic{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.9);display:grid;place-items:center;font-size:22px;margin-bottom:6px}
+.role b{font-size:17px}.role .nm{font-weight:700;color:var(--mint);font-size:14px}.role .ds{font-size:13px;color:rgba(255,255,255,.75)}
+.lform{margin-top:16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:18px}
+.lform .inp{background:#fff;color:#0D2137;border-color:transparent}.lform .err{color:#FFD1CC}
+.walk{margin-top:16px;background:rgba(0,0,0,.15);border-radius:16px;padding:14px 18px}.walk summary{cursor:pointer;font-weight:800}.walk ol{margin:10px 0 0;padding-left:20px;line-height:1.7;font-size:14px;color:rgba(255,255,255,.9)}
+.fine{font-size:12px;color:rgba(255,255,255,.6);text-align:center;margin-top:16px}
+/* patient phone */
+.stage{display:flex;justify-content:center;align-items:flex-start;gap:28px;padding:26px 16px 40px}
+.phone-frame{width:390px;height:812px;max-height:calc(100vh - 110px);min-height:640px;border-radius:46px;background:var(--bg);border:10px solid #0B1624;box-shadow:0 30px 60px rgba(8,26,36,.35);overflow:hidden;display:flex;flex-direction:column;position:relative}
+.status{background:var(--teal);color:#fff;display:flex;justify-content:space-between;padding:10px 26px 6px;font-size:13px;font-weight:800;flex:none}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--bg)}
+.bnav{flex:none;display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--line);padding:6px 4px 12px}
+.bnav button{border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted);font-weight:600;padding:4px}
+.bnav button span{font-size:20px;filter:grayscale(.5);opacity:.75}.bnav button.on{color:var(--teal);font-weight:800}.bnav button.on span{filter:none;opacity:1}
+.side-note{max-width:260px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;font-size:14px;box-shadow:var(--shadow);margin-top:60px}
+.hdr{background:linear-gradient(160deg,#028090,#016D7B);color:#fff;padding:18px 20px 26px}
+.hdr .hi{font-size:14px;color:rgba(255,255,255,.8)}.hdr .nm{font-size:23px;font-weight:800}
+.bell{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.15);border:0;cursor:pointer;font-size:19px;position:relative}.bell i{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--mint);border:2px solid #028090}
+.brandline{text-align:right;margin-top:10px;font-weight:800;color:rgba(255,255,255,.7)}.brandline em{font-style:normal;color:var(--mint)}.brandline span{font-size:10px;letter-spacing:.3em;font-weight:600;color:rgba(255,255,255,.5)}
+.search{background:#fff;color:#9AAAB5;border-radius:14px;padding:12px 14px;margin-top:8px;font-size:14px}
+.pad{padding:16px 16px 22px}
+.appbar{display:flex;align-items:center;gap:14px;padding:16px;background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+.back{width:40px;height:40px;border-radius:12px;border:0;background:var(--surface2);cursor:pointer;font-size:18px}
+.tcard{background:linear-gradient(135deg,#028090,#016D7B);color:#fff;border-radius:22px;padding:18px;position:relative;overflow:hidden;box-shadow:0 10px 24px rgba(2,128,144,.25)}
+.tcard::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.07)}
+.tcard.warn{background:linear-gradient(135deg,#B9462A,#D9622B)}
+.tpill{display:inline-block;background:var(--mint);color:#06302A;font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;letter-spacing:.04em}
+.tcard.warn .tpill{background:#fff;color:#B9462A}
+.tcard h3{font-size:20px;margin-top:10px;color:#fff}.tcard .sub{color:rgba(255,255,255,.85);font-size:14px;margin-top:2px}.tcard .meta{font-size:13px;margin-top:10px;color:#fff}
+.wbtn{margin-top:14px;border:0;background:#fff;color:#016D7B;font-weight:800;border-radius:12px;padding:10px 14px;cursor:pointer;position:relative;z-index:1}.wbtn.ghost{background:rgba(255,255,255,.18);color:#fff}
+.ocard{background:linear-gradient(135deg,#C2410C,#E0601F);color:#fff;border-radius:22px;padding:16px;box-shadow:0 10px 24px rgba(194,65,12,.25)}
+.ocard .live{font-size:11px;font-weight:800;letter-spacing:.06em}.ocard .now{margin-top:8px;background:rgba(255,255,255,.18);border-radius:14px;padding:6px 12px;font-size:30px;font-weight:900;display:inline-block}.ocard .now small{display:block;font-size:10px;font-weight:700;letter-spacing:.06em}
+.ocard-r{font-size:13px;flex:1;min-width:120px}.obtn{margin-top:12px;width:100%;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;border-radius:12px;padding:9px;font-weight:800;cursor:pointer}
+.mini{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:13px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:3px;box-shadow:var(--shadow)}
+.tile.wide{flex-direction:row;align-items:center;gap:12px;width:100%}
+.tile .ti{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:22px;margin-bottom:8px}.tile.wide .ti{margin:0}
+.tile b{font-size:15px}.tile small{color:var(--muted);font-size:12.5px}
+.sec{margin:20px 2px 10px}.wcard{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
+.wcard.left{text-align:left}
+.res{background:var(--surface2);border-radius:14px;padding:12px;margin-top:12px;font-size:14px}.res p{margin:6px 0 0}
+.lbl{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--muted);margin:18px 2px 10px;display:flex;justify-content:space-between;gap:8px}.lbl:first-child{margin-top:4px}.hintx{letter-spacing:0;font-weight:700;color:var(--teal);text-transform:none}
+.doc{display:flex;align-items:center;gap:12px;background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:12px}.doc.on{border-color:var(--teal);background:var(--soft)}
+.av{width:48px;height:48px;border-radius:14px;background:#FFF2DE;display:grid;place-items:center;font-size:24px;flex:none}.av.sm{width:34px;height:34px;font-size:17px;border-radius:10px}
+.doc small{display:block;color:var(--muted);font-size:12.5px}.doc small.g{color:var(--tealink);font-weight:700}
+.selp{margin-left:auto;background:var(--teal);color:#fff;font-size:12px;font-weight:800;border-radius:10px;padding:5px 10px}
+.why-box{background:var(--surface);border:1px dashed var(--teal);border-radius:14px;padding:10px 12px;font-size:13px;margin-top:10px}
+.dates{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.date{border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:8px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;font-weight:800}
+.date small{font-size:11px;color:var(--muted);font-weight:700}.date b{font-size:20px}.date i{font-style:normal;font-size:10px;color:var(--teal)}
+.date.on{background:var(--teal);border-color:var(--teal);color:#fff}.date.on small,.date.on i{color:rgba(255,255,255,.85)}
+.times{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.time{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 4px;cursor:pointer;font-weight:700;font-size:13.5px}.time.wide{grid-column:1/-1;background:var(--mintbg);border-color:var(--mint);color:var(--tealink)}
+.time.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.reason{border:1.5px solid var(--line);border-radius:12px;padding:12px;color:var(--muted);font-size:14px;background:var(--surface)}
+.cbtn{width:100%;margin-top:18px;border:0;background:var(--teal);color:#fff;font-weight:800;font-size:16px;border-radius:14px;padding:14px;cursor:pointer;box-shadow:0 8px 20px rgba(2,128,144,.25)}.cbtn.sm{width:auto;margin-top:0;font-size:13px;padding:8px 12px;border-radius:10px}
+.party{font-size:54px;margin-top:6px}.ttl{font-size:24px;margin-top:6px}
+.ticket{background:var(--surface);border-radius:22px;padding:20px;margin-top:18px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.tk-h{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--muted)}.tk-n{font-size:66px;font-weight:900;color:var(--teal);line-height:1.1}
+.ticket .chip{margin-top:6px}.ticket dl{display:grid;grid-template-columns:auto 1fr;gap:8px;text-align:left;margin:16px 0 0;border-top:1px solid var(--line);padding-top:14px;font-size:14px}.ticket dt{color:var(--muted)}.ticket dd{margin:0;text-align:right;font-weight:800}.ticket dd.g{color:var(--tealink)}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--violetbg);color:var(--violet);border-radius:999px;font-size:12px;font-weight:800;padding:4px 10px}
+.rl{margin:8px 0 0;padding-left:18px;font-size:13.5px;line-height:1.7}
+.nowcard{background:linear-gradient(135deg,#028090,#016D7B);color:#fff;border-radius:24px;padding:22px;text-align:center;box-shadow:0 10px 24px rgba(2,128,144,.25)}
+.nowcard small{letter-spacing:.24em;font-weight:800;color:rgba(255,255,255,.7);font-size:12px}.nowcard .nn{font-size:76px;font-weight:900;color:var(--mint);line-height:1.05}.nowcard span{font-size:14px;color:rgba(255,255,255,.9)}
+.alert-p,.alert-g,.turn{display:flex;gap:12px;align-items:center;border-radius:18px;padding:14px;margin:12px 0;font-size:20px}
+.alert-p{background:var(--redbg);border:1.5px solid #F7B4B4}.alert-g{background:var(--mintbg);border:1.5px solid #9DE8D5}
+.alert-p b,.alert-g b{display:block;font-size:14.5px}.alert-p small,.alert-g small{display:block;font-size:12.5px;color:var(--muted)}
+.turn{background:linear-gradient(135deg,#15803D,#16A34A);color:#fff;font-size:28px}.turn b{display:block;font-size:19px}.turn small{font-size:13px;opacity:.9}
+.prog{height:10px;background:var(--surface2);border-radius:5px;margin:12px 0 14px;overflow:hidden}.prog span{display:block;height:100%;background:linear-gradient(90deg,#028090,#02C39A);border-radius:5px}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);text-align:center}.trio b{font-size:26px;display:block;font-weight:900}.trio b.t{color:var(--teal)}.trio small{color:var(--muted);font-weight:700}
+.wcard.ai{border:1.5px solid #9DE8D5;background:linear-gradient(180deg,var(--mintbg),var(--surface) 70%)}
+.ail{font-size:11.5px;font-weight:800;letter-spacing:.1em;color:var(--tealink)}.aiv{font-size:30px;font-weight:900}
+.ai details{margin-top:8px}.ai summary{cursor:pointer;font-weight:800;color:var(--teal);font-size:14px}.ai ul{margin:8px 0 0;padding-left:18px;font-size:13.5px;line-height:1.5}.ai li{margin:4px 0}
+.pos{display:flex;gap:6px;margin-top:12px;overflow-x:auto;padding:4px}
+.pc{flex:none;min-width:46px;height:52px;border-radius:14px;background:var(--surface2);color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:15px;padding:0 6px}
+.pc.done{background:var(--mintbg);color:var(--tealink)}.pc.srv{background:#BDEFE2;color:#06302A}.pc.me{background:var(--teal);color:#fff;box-shadow:0 0 0 4px #B9DDE2}.pc small{font-size:9px;font-weight:800}
+.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 12px}
+.ab{border:1.5px solid var(--teal);background:var(--surface);color:var(--teal);font-weight:800;border-radius:14px;padding:12px 4px;cursor:pointer;font-size:13.5px}.ab.red{border-color:#F7B4B4;background:var(--redbg);color:var(--red)}.ab.sm{padding:7px 12px;font-size:13px}
+.map{border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+.mapline{height:92px;background:linear-gradient(120deg,#DFF3EC,#D6EEF3 60%,#CFE6F2);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:relative}
+.mapline::before{content:"";position:absolute;left:44px;right:48px;top:50%;height:4px;background:#fff;border-radius:2px}
+.mapline i{position:relative;width:22px;height:22px;border-radius:50%;background:var(--teal);border:5px solid #B9DDE2}.mapline i.b{width:34px;height:34px;background:#fff;border:2px solid #E25555;display:grid;place-items:center;font-style:normal;font-size:16px}
+.mapline span{position:relative;background:#fff;border-radius:999px;padding:4px 12px;font-weight:800;font-size:13px;color:#0D2137}
+.mapft{display:flex;align-items:center;gap:6px;padding:10px 14px;font-size:14px}.lnk{color:var(--teal);font-weight:800}
+.demo-btn{margin-top:14px;width:100%;border:1.5px dashed var(--line);background:none;border-radius:12px;padding:10px;cursor:pointer;color:var(--muted);font-weight:700}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border-bottom:1px solid var(--line)}.seg button{border:0;background:none;padding:12px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}.seg button.on{color:var(--teal);border-color:var(--teal)}
+.meta2{font-size:13px;color:var(--muted);margin-top:8px}
+.steps{display:flex;margin:4px 0}.st{flex:1;text-align:center;position:relative;font-size:11px;color:var(--muted);font-weight:700}
+.st::before{content:"";position:absolute;top:11px;left:-50%;width:100%;height:3px;background:var(--line);z-index:0}.st:first-child::before{display:none}
+.st .c{position:relative;z-index:1;width:24px;height:24px;border-radius:50%;margin:0 auto 4px;background:var(--surface);border:3px solid var(--line);display:grid;place-items:center;font-size:11px}
+.st.done .c{background:var(--mint);border-color:var(--mint);color:#06302A}.st.done::before{background:var(--mint)}.st.cur .c{border-color:var(--teal)}.st.cur{color:var(--ink)}.st.bad .c{border-color:var(--red);background:var(--redbg);color:var(--red)}
+.msg{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}.msg:last-child{border-bottom:0}
+.msg .ch{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:11px;font-weight:800}.msg .ch.wa{background:#DCF8E6;color:#0B6B3A}.msg .ch.sms{background:var(--bluebg);color:var(--blue)}.msg .ch.app{background:var(--mintbg);color:var(--tealink)}
+.msg time{font-size:12px;color:var(--muted)}
+/* panels */
+.panel{max-width:1180px;margin:22px auto 40px;background:var(--bg);border-radius:28px;overflow:hidden;box-shadow:0 20px 50px rgba(8,26,36,.18);border:1px solid var(--line)}
+.phead{display:flex;align-items:center;gap:16px;background:linear-gradient(120deg,#028090,#016D7B 60%,#08566A);color:#fff;padding:22px 28px}
+.phead .logo{width:62px;height:62px;border-radius:18px}.phead .pt{font-size:16px;color:rgba(255,255,255,.9)}.phead .tag{font-size:11px;margin-top:2px}
+.livep{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);border-radius:999px;padding:8px 16px;font-weight:800}.livep i{width:9px;height:9px;border-radius:50%;background:var(--mint)}
+.pbody{padding:22px 28px 28px}
+.ptabs{display:flex;gap:4px;background:var(--surface);border-radius:18px;padding:6px;margin-bottom:16px;overflow-x:auto;box-shadow:var(--shadow)}
+.ptabs button{border:0;background:none;padding:10px 16px;border-radius:13px;font-weight:800;color:var(--muted);cursor:pointer;white-space:nowrap;font-size:14.5px}
+.ptabs button b{display:inline-block;min-width:24px;background:var(--surface2);border-radius:999px;padding:0 7px;font-size:12px;margin-left:4px;color:var(--muted)}
+.ptabs button.on{background:var(--soft);color:var(--teal)}.ptabs button.on b{background:var(--teal);color:#fff}
+.pfoot{display:flex;justify-content:space-between;padding:14px 28px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+.pcard{background:var(--surface);border-radius:20px;padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.banner{background:var(--mintbg);border-radius:16px;padding:12px 16px;font-size:14px;margin-bottom:16px}
+.bigres{font-size:22px;font-weight:900;margin-top:4px}.sugg{background:var(--soft);border-radius:14px;padding:12px 14px}
+.calling{background:var(--surface);border-radius:22px;padding:24px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--line);margin-bottom:16px}
+.cl{letter-spacing:.2em;font-weight:800;color:var(--muted);font-size:13px}.cn{font-size:96px;font-weight:900;color:var(--teal);line-height:1.05}.cnm{font-size:22px;font-weight:800;margin-bottom:8px}
+.center-row{justify-content:center}.dchip{background:var(--soft);color:var(--teal);font-weight:800;border-radius:999px;padding:6px 14px;font-size:14px}
+.cacts{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.callnext{flex:1;max-width:560px;border:0;background:var(--mint);color:#06302A;font-weight:900;font-size:20px;border-radius:16px;padding:18px;cursor:pointer;box-shadow:0 10px 26px rgba(2,195,154,.3)}
+.pv{border:1.5px solid var(--line);background:var(--surface2);border-radius:16px;padding:16px 22px;font-weight:800;font-size:17px;cursor:pointer;color:var(--ink)}
+.stats3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.stats3 .s,.funnel .s{background:var(--surface);border-radius:18px;padding:16px;text-align:center;box-shadow:var(--shadow);border:1.5px solid var(--line)}
+.stats3 .s.on,.funnel .s.on{background:var(--soft);border-color:var(--teal)}
+.stats3 b,.funnel b{font-size:34px;font-weight:900;display:block}.stats3 small,.funnel small{color:var(--muted);font-weight:800;letter-spacing:.04em}
+.funnel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.funnel .bar{height:6px;background:var(--surface2);border-radius:3px;margin-top:8px;overflow:hidden}.funnel .bar span{display:block;height:100%;background:var(--mint)}
+.tok{color:var(--teal);font-size:16px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;margin-top:12px}
+.pg{position:relative;background:var(--surface2);border-radius:16px;padding:14px 6px;text-align:center;color:var(--muted)}.pg b{display:block;font-size:20px;color:var(--ink)}.pg small{font-weight:700}.pg i{position:absolute;top:6px;right:8px;font-style:normal;font-size:13px}
+.pg.seen{background:var(--mintbg);color:var(--tealink)}.pg.seen b{color:var(--tealink)}.pg.cur{background:var(--teal);color:#fff;box-shadow:0 0 0 4px #B9DDE2}.pg.cur b{color:#fff}.pg.ns{background:var(--redbg);color:var(--red)}.pg.ns b{color:var(--red)}
+.legend .lg{display:inline-block;width:11px;height:11px;border-radius:3px;background:var(--surface2);border:1px solid var(--line);margin:0 4px 0 10px;vertical-align:-1px}.legend .lg.seen{background:var(--mintbg)}.legend .lg.cur{background:var(--teal)}.legend .lg.ns{background:var(--redbg)}
+.clinic{border:2px solid var(--line);border-radius:16px;padding:14px;cursor:pointer;background:var(--surface);text-align:left;width:100%}.clinic.on{border-color:var(--teal);background:var(--soft)}.clinic.na{opacity:.5;cursor:not-allowed}
+.rank{width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800;flex:none}
+/* modal + toast */
+.scrim{position:fixed;inset:0;background:rgba(8,26,36,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:40}.scrim.on{display:flex}
+.modal{background:var(--surface);border-radius:22px;width:min(540px,100%);max-height:90vh;overflow:auto}
+.modal .hd{display:flex;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}.modal .hd .x{margin-left:auto}.modal .bd{padding:16px 18px;display:grid;gap:14px}.modal .ft{display:flex;gap:10px;justify-content:flex-end;padding:14px 18px;border-top:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;background:#0D2137;color:#fff;padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;transition:.25s;z-index:50;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.25)}.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:980px){.hide-md{display:none}.stats3{grid-template-columns:repeat(2,minmax(0,1fr))}.funnel{grid-template-columns:repeat(3,minmax(0,1fr))}.g2.wide{grid-template-columns:1fr}}
+@media (max-width:700px){.roles{grid-template-columns:1fr}.word.xl{font-size:48px}.panel{margin:0;border-radius:0;border:0}.phead{padding:16px}.phead .pt{font-size:13px}.phead .livep{display:none}.pbody{padding:16px}.pfoot{padding:12px 16px}.cn{font-size:72px}.callnext{font-size:17px}.g2{grid-template-columns:1fr}.funnel{grid-template-columns:repeat(2,minmax(0,1fr))}.hide-sm{display:none}.top{padding:8px 12px}.who small{display:none}}
+@media (max-width:480px){.stage{padding:0}.phone-frame{width:100%;height:calc(100vh - 78px);max-height:none;min-height:0;border:0;border-radius:0;box-shadow:none}.status{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="top"></div>
+<div class="demo-banner">Demo with sample data. No real patients; no real messages are sent.</div>
+<div id="app"></div>
+<div class="scrim" id="scrim"><div class="modal" role="dialog" aria-modal="true" id="modal"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+// ===================== data =====================
+const LOGINS={patient:{id:'0300-1234567',pin:'1111',name:'Ayesha Bibi',pid:'P1',label:'Patient',ic:'🤰',desc:'Expecting mother, 30 weeks. Referred after a blood pressure screening.'},
+ doctor:{id:'dr.farah@demo.turnly',pin:'2222',name:'Dr Farah Siddiqui',label:'Doctor',ic:'🩺',desc:'OPD doctor at Gulshan Family Clinic. Reviews referrals and runs today’s queue.'},
+ worker:{id:'nasreen@demo.turnly',pin:'3333',name:'Nasreen Akhtar',label:'Health worker',ic:'📋',desc:'Lady health worker. Records screening results and tracks follow-ups.'}};
+const CLINICS={
+ C1:{name:'Gulshan Family Clinic',area:'Gulshan-e-Iqbal',services:['Antenatal','Diabetes','Hypertension','General OPD'],km:2.1,next:'Today',doctor:'Dr Farah Siddiqui',login:true},
+ C2:{name:'Korangi Health Centre',area:'Korangi',services:['Antenatal','General OPD'],km:6.8,next:'Tomorrow',wait:40},
+ C3:{name:'City Care Hospital OPD',area:'Shahrah-e-Faisal',services:['Diabetes','Hypertension','General OPD'],km:4.5,next:'Today',wait:70}};
+const WINDOW_DAYS={'Same day':0,'Within 48 hours':2,'Within 7 days':7,'Within 14 days':14};
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function seed(){return{
+ day:0,min:10*60+20, // Wed 18 Nov 2026, 10:20
+ patients:{
+  P1:{name:'Ayesha Bibi',age:27,preg:30,chronic:[],phone:'0300-•••-4567',area:'Gulshan-e-Iqbal'},
+  P2:{name:'Rashid Khan',age:56,preg:0,chronic:['Diabetes'],phone:'0321-•••-8812',area:'Gulshan-e-Iqbal'},
+  P3:{name:'Imran Ali',age:34,preg:0,chronic:[],phone:'0333-•••-1190',area:'Gulshan-e-Iqbal'},
+  P4:{name:'Zubaida Begum',age:61,preg:0,chronic:['Hypertension'],phone:'0345-•••-2071',area:'Gulshan-e-Iqbal'},
+  P5:{name:'Hina Tariq',age:26,preg:22,chronic:[],phone:'0301-•••-6634',area:'Gulshan-e-Iqbal'},
+  Q1:{name:'Usman Gill',age:40,preg:0,chronic:[]},Q2:{name:'Akbar Hussain',age:72,preg:0,chronic:[]},Q3:{name:'Saima Noor',age:45,preg:0,chronic:['Hypertension']},Q4:{name:'Bilal Ahmed',age:31,preg:0,chronic:[]},Q5:{name:'Fatima Rizvi',age:38,preg:0,chronic:[]}},
+ refs:[
+  {id:'R-1041',pid:'P1',source:'Screening camp, Gulshan Block 6',by:'Nasreen Akhtar',test:'Blood pressure',value:'150/98 mmHg',flag:'High for pregnancy',window:'Within 48 hours',service:'Antenatal',clinic:'C1',status:'Accepted',created:'Tue 17 Nov',consent:'17 Nov, 4:10 pm',tags:['Expecting mother'],reviewNote:'Check for pre-eclampsia. Urine protein and repeat BP.',log:[['Tue 17 Nov 4:10 pm','Screened by Nasreen Akhtar. Patient consented to share the result with the clinic.'],['Tue 17 Nov 4:12 pm','Referral sent to Gulshan Family Clinic'],['Tue 17 Nov 6:40 pm','Accepted by Dr Farah Siddiqui: within 48 hours, priority: expecting mother'],['Tue 17 Nov 6:41 pm','Booking link sent to patient by WhatsApp']]},
+  {id:'R-1042',pid:'P2',source:'Screening camp, Gulshan Block 6',by:'Nasreen Akhtar',test:'Blood sugar (random)',value:'262 mg/dL',flag:'High',window:'Within 7 days',service:'Diabetes',clinic:'C1',status:'Awaiting review',created:'Wed 18 Nov',consent:'18 Nov, 9:05 am',tags:['Chronic care'],log:[['Wed 18 Nov 9:05 am','Screened by Nasreen Akhtar. Patient consented.'],['Wed 18 Nov 9:06 am','Referral sent to Gulshan Family Clinic']]},
+  {id:'R-1038',pid:'P3',source:'Referral letter, BHU Gulshan',by:'Nasreen Akhtar',test:'Haemoglobin',value:'8.9 g/dL',flag:'Low (anaemia)',window:'Within 14 days',service:'General OPD',clinic:'C1',status:'Missed',created:'Tue 10 Nov',consent:'10 Nov, 11:30 am',tags:[],slot:'Sat 14 Nov, 10:00 am',token:'#21',log:[['Tue 10 Nov 11:30 am','Referral letter uploaded by Nasreen Akhtar'],['Tue 10 Nov 3:00 pm','Accepted by Dr Farah Siddiqui'],['Wed 11 Nov 9:20 am','Booked for Sat 14 Nov, 10:00 am'],['Sat 14 Nov 1:00 pm','Visit missed'],['Sun 15 Nov 9:00 am','Reminder 1 sent: rebook your visit'],['Mon 16 Nov 9:00 am','Reminder 2 sent'],['Tue 17 Nov 9:00 am','No rebooking after 2 reminders: health worker alerted']]},
+  {id:'R-1035',pid:'P4',source:'Screening camp, Gulshan Block 6',by:'Nasreen Akhtar',test:'Blood pressure',value:'168/104 mmHg',flag:'High',window:'Within 7 days',service:'Hypertension',clinic:'C1',status:'Completed',created:'Mon 9 Nov',consent:'9 Nov, 10:15 am',tags:['Chronic care'],slot:'Thu 12 Nov, 9:30 am',token:'#4',visit:{clinic:true,patient:true},outcome:'Medication started. Next check in 4 weeks.',log:[['Mon 9 Nov 10:15 am','Screened by Nasreen Akhtar'],['Mon 9 Nov 2:00 pm','Accepted by Dr Farah Siddiqui'],['Thu 12 Nov 9:52 am','Seen by Dr Farah Siddiqui'],['Thu 12 Nov 1:10 pm','Patient confirmed the visit'],['Thu 12 Nov 1:10 pm','Next follow-up booked for Thu 10 Dec']]},
+  {id:'R-1039',pid:'P5',source:'Antenatal visit due',by:'Nasreen Akhtar',test:'Antenatal check',value:'22 weeks',flag:'Routine visit due',window:'Within 14 days',service:'Antenatal',clinic:'C1',status:'In queue',created:'Fri 13 Nov',consent:'13 Nov, 12:00 pm',tags:['Expecting mother'],slot:'Today',token:'#12',log:[['Fri 13 Nov 12:00 pm','Antenatal visit due, referred by Nasreen Akhtar'],['Fri 13 Nov 4:00 pm','Accepted by Dr Farah Siddiqui'],['Wed 18 Nov 9:58 am','Checked in at the clinic']]}],
+ queue:[{token:'#8',pid:'Q1',status:'Seen',arr:'09:05'},{token:'#9',pid:'Q2',status:'With doctor',arr:'09:20'},{token:'#10',pid:'Q3',status:'Waiting',arr:'09:35',here:true},{token:'#11',pid:'Q4',status:'Waiting',arr:'09:44',here:true},{token:'#12',pid:'P5',status:'Waiting',arr:'09:58',here:true,ref:'R-1039'},{token:'#13',pid:'Q5',status:'Waiting',arr:'10:05',here:true}],
+ nextToken:14,durs:[6,8,5,9,7,6,10,7,8,6,7,9],
+ msgs:[{pid:'P1',at:'Tue 17 Nov 4:12 pm',ch:'sms',text:'Turnly: Your blood pressure check today was 150/98. Nasreen has referred you to Gulshan Family Clinic. A doctor will review it soon.'},{pid:'P1',at:'Tue 17 Nov 6:41 pm',ch:'wa',text:'Turnly: Dr Farah Siddiqui has asked to see you within 48 hours. Tap to choose a time and get your token.'}],
+ alerts:[{at:'Tue 17 Nov 9:00 am',text:'Imran Ali missed his visit on Sat 14 Nov and has not rebooked after 2 reminders.',ref:'R-1038'}],
+ screenedNormal:14,ids:1043,pconsent:{clinic:true,worker:true}}}
+let S;try{S=JSON.parse(localStorage.getItem('turnly-demo-v2'))}catch(e){}
+if(!S||!S.refs)S=seed();
+let U={role:null,tab:null,screen:null,sel:{}};
+function save(){try{localStorage.setItem('turnly-demo-v2',JSON.stringify(S))}catch(e){}}
+
+// ===================== helpers =====================
+const $=s=>document.querySelector(s);
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P=id=>S.patients[id];
+const R=id=>S.refs.find(r=>r.id===id);
+function dayName(off=S.day){const d=new Date(2026,10,18+off);return `${DAYS[d.getDay()]} ${d.getDate()} Nov`}
+function hm(m){m=Math.round(m);let h=Math.floor(m/60),mm=m%60,ap=h>=12?'pm':'am';h=h%12||12;return `${h}:${String(mm).padStart(2,'0')} ${ap}`}
+const nowStr=()=>`${dayName()} ${hm(S.min)}`;
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),3200)}
+function log(r,t){r.log.push([nowStr(),t])}
+function msg(pid,ch,text){S.msgs.push({pid,at:nowStr(),ch,text})}
+function tick(n){S.min+=n}
+const STAT={'Awaiting review':'p-amber','Accepted':'p-blue','Booked':'p-blue','In queue':'p-violet','With doctor':'p-violet','Completed':'p-teal','Missed':'p-red','Declined':'p-grey','Redirected':'p-grey'};
+const pill=(s,c)=>`<span class="pill ${c||STAT[s]||'p-grey'}">${esc(s)}</span>`;
+function tagsFor(p){const t=[];if(p.preg)t.push('Expecting mother');if(p.chronic&&p.chronic.length)t.push('Chronic care');if(p.age>=65)t.push('Elderly');return t}
+const tagPill=t=>`<span class="pill ${t==='Expecting mother'?'p-violet':t==='Chronic care'?'p-blue':'p-amber'}">${t==='Expecting mother'?'🤰 ':t==='Chronic care'?'♥ ':''}${t}</span>`;
+
+// ===================== triage (sample rules) =====================
+function triage(test,v,preg){
+ if(test==='Blood pressure'){const s=+v.sys,d=+v.dia;if(!s||!d)return null;const val=`${s}/${d} mmHg`;
+  if(preg&&(s>=160||d>=110))return{val,flag:'Very high for pregnancy',window:'Same day',service:'Antenatal',why:'Blood pressure of 160/110 or more in pregnancy needs to be seen the same day.'};
+  if(preg&&(s>=140||d>=90))return{val,flag:'High for pregnancy',window:'Within 48 hours',service:'Antenatal',why:'Blood pressure of 140/90 or more in pregnancy needs a doctor’s check within 48 hours.'};
+  if(s>=180||d>=120)return{val,flag:'Very high',window:'Same day',service:'Hypertension',why:'Blood pressure of 180/120 or more needs to be seen the same day.'};
+  if(s>=140||d>=90)return{val,flag:'High',window:'Within 7 days',service:'Hypertension',why:'Blood pressure of 140/90 or more needs a follow-up within 7 days.'};
+  return{val,flag:'Normal',window:null,why:'Below 140/90. No referral needed; recheck at the next camp.'}}
+ if(test==='Blood sugar (random)'){const g=+v.val;if(!g)return null;const val=`${g} mg/dL`;
+  if(g>=300)return{val,flag:'Very high',window:'Within 48 hours',service:preg?'Antenatal':'Diabetes',why:'A random blood sugar of 300 mg/dL or more needs a check within 48 hours.'};
+  if(g>=200)return{val,flag:'High',window:'Within 7 days',service:preg?'Antenatal':'Diabetes',why:'A random blood sugar of 200 mg/dL or more suggests diabetes and needs a follow-up within 7 days.'};
+  if(preg&&g>=140)return{val,flag:'Raised for pregnancy',window:'Within 7 days',service:'Antenatal',why:'In pregnancy, 140 mg/dL or more needs a test for gestational diabetes.'};
+  return{val,flag:'Normal',window:null,why:'In the normal range. No referral needed.'}}
+ if(test==='Haemoglobin'){const h=+v.val;if(!h)return null;const val=`${h} g/dL`,cut=preg?11:12;
+  if(h<7)return{val,flag:'Severe anaemia',window:'Within 48 hours',service:preg?'Antenatal':'General OPD',why:'Haemoglobin below 7 g/dL is severe anaemia and needs a check within 48 hours.'};
+  if(h<cut)return{val,flag:'Low (anaemia)',window:'Within 14 days',service:preg?'Antenatal':'General OPD',why:`Haemoglobin below ${cut} g/dL is anaemia and needs a follow-up within 14 days.`};
+  return{val,flag:'Normal',window:null,why:'In the normal range. No referral needed.'}}
+ if(test==='Antenatal check'){const w=+v.val;if(!w)return null;return{val:`${w} weeks`,flag:'Routine visit due',window:'Within 14 days',service:'Antenatal',why:'Antenatal visit is due for this stage of pregnancy.'}}
+ return null}
+
+// ===================== AI wait estimate =====================
+function boost(q){if(q.call)return 100;const p=P(q.pid),t=tagsFor(p);let b=0;if(t.includes('Expecting mother'))b+=2;if(t.includes('Chronic care'))b+=1;if(t.includes('Elderly'))b+=1;return Math.min(b,2)}
+function ordered(){const w=S.queue.filter(q=>q.status==='Waiting');return w.map((q,i)=>({q,i,s:i-boost(q)})).sort((a,b)=>a.s-b.s||a.i-b.i).map(x=>({...x.q,_i:x.i}))}
+function stats(){const d=S.durs.slice(-12);const a=d.reduce((x,y)=>x+y,0)/d.length;const sd=Math.sqrt(d.reduce((x,y)=>x+(y-a)**2,0)/d.length);return{a,sd,n:d.length}}
+const r5=x=>Math.max(0,Math.round(x/5)*5);
+function estimate(token){const o=ordered(),k=o.findIndex(q=>q.token===token);if(k<0)return null;const{a,sd,n}=stats();const busy=S.queue.some(q=>q.status==='With doctor');
+ const mid=(k+(busy?.5:0))*a;const spread=1.3*sd*Math.sqrt(k+1)+2;const me=o[k];const myB=boost(me);
+ const laterPri=o.slice(k+1).filter(q=>boost(q)>0).length;const extra=myB?0:4;
+ let lo=r5(mid-spread),hi=r5(mid+spread+extra);if(hi<=lo)hi=lo+5;
+ const moved=me._i-k;
+ const why=[`${k===0?'No one is':k===1?'1 patient is':k+' patients are'} ahead of you${busy?', and 1 patient is with the doctor now':''}.`,
+  `Dr Farah is taking about ${a.toFixed(0)} minutes per patient today (her last ${n} visits).`,
+  moved>0?`You moved up ${moved} place${moved>1?'s':''} because you are ${tagsFor(P(me.pid)).includes('Expecting mother')?'an expecting mother':'a priority patient'}. Priority patients move up at most 2 places, so no one waits too long.`:'',
+  !myB?`A priority patient (an expecting mother or a chronic-care patient) may be seen before you, so the upper end is a little higher.`:'',
+  `The range is ±${Math.round(spread)} minutes because visit times vary${k>2?' and you are further back in the line':''}.`].filter(Boolean);
+ return{k,lo,hi,mid:r5(mid),why,a,moved}}
+
+// ===================== shared UI =====================
+function myRefs(){return S.refs.filter(r=>r.pid==='P1')}
+function mainRef(){return myRefs().filter(r=>!r.parent).slice(-1)[0]}
+const LOGO=`<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="17" cy="22" r="5.2" fill="#0B5A66"/><rect x="11.5" y="28.5" width="11" height="12" rx="4.5" fill="#0B5A66"/><circle cx="28" cy="20" r="6.4" fill="#2BB3BF"/><rect x="21" y="27.5" width="14" height="14" rx="5.5" fill="#2BB3BF"/><circle cx="40.5" cy="18" r="7.4" fill="#02C39A"/><rect x="32.5" y="26.5" width="16" height="16" rx="6" fill="#02C39A"/><rect x="11" y="46" width="34" height="5" rx="2.5" fill="#02C39A"/><path d="M44 43.5l6 5-6 5z" fill="#02C39A"/><path d="M47 47.5l3.5 3.5 6.5-8" fill="none" stroke="#0D2137" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const WORD=`<span class="word">turn<em>ly</em></span>`;
+function renderTop(){const L=U.role&&LOGINS[U.role];$('#top').innerHTML=`<header class="top"><span class="logo sm">${LOGO}</span>${WORD}<span class="demo-tag hide-sm">Demo</span><span class="sp"></span><span class="clock hide-sm">${esc(nowStr())}</span>${L?`<div class="who">${esc(L.name)}<small>${L.label}</small></div><button class="tbtn" data-a="logout">Switch user</button>`:''}<button class="tbtn" data-a="reset" title="Reset demo data">Reset</button></header>`}
+function render(){renderTop();const v=!U.role?vLogin():U.role==='patient'?vPatient():U.role==='doctor'?vDoctor():vWorker();$('#app').innerHTML=v;const sc=$('.screen');if(sc&&U.keepScroll===false)sc.scrollTop=0;U.keepScroll=true;save()}
+const CHK='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
+function journey(r){const order=['Screened','Doctor review','Booked','Visit','Confirmed'];let idx=1,bad=-1;
+ if(r.status==='Accepted')idx=2;if(['Booked','In queue','With doctor'].includes(r.status))idx=3;if(r.status==='Completed')idx=r.visit&&r.visit.patient?5:4;if(r.status==='Missed'){idx=3;bad=3}
+ return `<div class="steps" aria-label="Follow-up progress">${order.map((s,i)=>`<div class="st ${i===bad?'bad':i<idx?'done':i===idx?'cur':''}"><div class="c">${i===bad?'!':i<idx?CHK:i+1}</div>${s}</div>`).join('')}</div>`}
+
+// ===================== login (Turnly landing) =====================
+function vLogin(){const sel=U.sel.login||'patient';const L=LOGINS[sel];
+ return `<div class="landing"><div class="land-in"><div class="hero"><span class="logo big">${LOGO}</span><div class="word xl">turn<em>ly</em></div><div class="tag">SKIP THE WAIT. GO ON TIME.</div><p>From a screening result to a completed follow-up visit. Choose a test login. You can switch between users at any time to follow the same patient from each side.</p></div>
+ <div class="roles">${Object.entries(LOGINS).map(([k,l])=>`<button class="role ${k===sel?'on':''}" data-login="${k}"><span class="ic" aria-hidden="true">${l.ic}</span><b>${l.label}</b><span class="nm">${esc(l.name)}</span><span class="ds">${esc(l.desc)}</span></button>`).join('')}</div>
+ <form id="lf" class="lform" autocomplete="off"><div class="g2"><label class="f">${sel==='patient'?'Mobile number':'Email'}<input class="inp" id="lid" value="${esc(L.id)}"></label><label class="f">PIN<input class="inp" id="lpin" type="password" inputmode="numeric" value="${esc(L.pin)}"></label></div>
+ <div class="row mt"><span class="small">Test login: <code>${esc(L.id)}</code> · PIN <code>${L.pin}</code></span><span class="sp"></span><button class="btn mint" type="submit">Sign in as ${L.label.toLowerCase()} →</button></div><div class="err" id="lerr"></div></form>
+ <details class="walk"><summary>Suggested 5-minute walkthrough</summary><ol>
+ <li><b>Health worker:</b> record a screening result (tap “Fill sample”). Turnly flags it, suggests the follow-up window and the right clinic, and explains why.</li>
+ <li><b>Doctor:</b> review the referral and accept, change or decline it. Turnly only suggests; the doctor decides.</li>
+ <li><b>Patient (Ayesha):</b> book a follow-up, get a token and follow the live queue with an AI wait estimate.</li>
+ <li><b>Doctor:</b> call patients, finish the visit and set the next follow-up. Try “No-show” to see missed-visit reminders.</li>
+ <li><b>Patient, then health worker:</b> confirm the visit happened and see the loop closed.</li></ol></details>
+ <p class="fine">Sample patients, clinics and screening rules. In a real rollout each clinic sets its own rules, and no clinical decision is made without a clinician.</p></div></div>`}
+
+// ===================== patient app (phone) =====================
+function vPatient(){const tab=U.tab||'home';const nav=[['home','🏠','Home'],['appts','📋','Appointments'],['queue','🎫','Live Queue'],['profile','👤','Profile']];
+ const map={home:pHome,book:pBook,confirmed:pConfirmed,queue:pQueue,appts:pAppts,profile:pProfile,msgs:pMsgs};
+ const navOn=['book','confirmed'].includes(tab)?'home':tab==='msgs'?'profile':tab;
+ return `<div class="stage"><div class="phone-frame"><div class="status"><span>9:41</span><span>Turnly</span><span>●●● ▮</span></div><div class="screen">${map[tab]()}</div>
+ <nav class="bnav">${nav.map(([k,i,l])=>`<button class="${navOn===k?'on':''}" data-tab="${k}"><span aria-hidden="true">${i}</span>${l}</button>`).join('')}</nav></div>
+ <aside class="side-note hide-md"><b>You are Ayesha Bibi</b>, 30 weeks pregnant. A health worker screened her blood pressure yesterday and referred her.<br><br>Book the follow-up, follow the live queue, then switch to the doctor to finish the visit.</aside></div>`}
+function appBar(t,back){return `<div class="appbar"><button class="back" data-tab="${back||'home'}" aria-label="Back">←</button><h2>${t}</h2></div>`}
+function plain(r){if(r.test==='Blood pressure'&&r.service==='Antenatal')return'Your blood pressure is higher than it should be in pregnancy. It is usually treatable, but a doctor should check you soon to keep you and your baby safe.';if(r.test==='Blood pressure')return'Your blood pressure is high. A doctor should check it and may start treatment.';if(r.test.startsWith('Blood sugar'))return'Your blood sugar is high. A doctor should check it for diabetes.';if(r.test==='Haemoglobin')return'Your blood is low in iron (anaemia). A doctor can treat it.';return'Your routine visit is due.'}
+function pHome(){const r=mainRef(),p=P('P1');const unread=S.msgs.filter(m=>m.pid==='P1').length;const q=S.queue.find(x=>x.ref===r.id&&['Waiting','With doctor'].includes(x.status));
+ let card='';
+ if(r.status==='Awaiting review')card=`<div class="tcard"><span class="tpill">REFERRAL</span><h3>Blood pressure check</h3><div class="sub">Dr Farah at Gulshan Family Clinic is reviewing your result.</div></div>`;
+ if(r.status==='Accepted'||r.status==='Missed')card=`<div class="tcard ${r.status==='Missed'?'warn':''}"><span class="tpill">${r.status==='Missed'?'MISSED VISIT':'FOLLOW-UP · '+r.window.toUpperCase()}</span><h3>${r.status==='Missed'?'Please rebook your check-up':'Blood pressure check'}</h3><div class="sub">${esc(r.test)} ${esc(r.value)} · from Nasreen’s screening</div><div class="meta">👩‍⚕️ Dr Farah Siddiqui &nbsp; 📍 2.1 km away</div><button class="wbtn" data-a="${r.status==='Missed'?'rebookMe':'goBook'}">${r.status==='Missed'?'Choose a new time →':'Book follow-up →'}</button></div>`;
+ if(q){const e=q.status==='Waiting'?estimate(q.token):null;card=`<div class="ocard"><div class="row" style="align-items:flex-start"><div><div class="live">● LIVE QUEUE · DR FARAH SIDDIQUI</div><div class="now"><small>YOUR TOKEN</small>${q.token}</div></div><div class="ocard-r">${q.status==='With doctor'?'<b>⚡ It’s your turn!</b><br>Go to Room 3':`<b>⚡ ${e.k===0?'You’re next!':e.k+' ahead of you'}</b><br>Wait ${e.lo}–${e.hi} min`}</div></div><button class="obtn" data-tab="queue">🎫 Track live</button></div>`}
+ if(r.status==='Booked')card=`<div class="tcard"><span class="tpill">${esc(r.slot.split(',')[0].toUpperCase())}</span><h3>Dr Farah Siddiqui</h3><div class="sub">Antenatal · Gulshan Family Clinic</div><div class="meta">🕐 ${esc(r.slot.split(', ').slice(1).join(', '))} &nbsp; 📍 2.1 km &nbsp; 🎫 Token ${r.token}</div><button class="wbtn" data-a="skipday">Demo: skip to the appointment day</button></div>`;
+ if(r.status==='Completed')card=r.visit.patient?`<div class="tcard"><span class="tpill">✓ FOLLOW-UP COMPLETE</span><h3>Thank you, Ayesha</h3><div class="sub">${esc(r.outcome||'')}</div></div>`:`<div class="tcard warn"><span class="tpill">VISIT CHECK</span><h3>Did you see the doctor today?</h3><div class="sub">This confirms your follow-up is complete.</div><div class="row mt8"><button class="wbtn" data-a="confirmVisit">Yes, I saw the doctor</button><button class="wbtn ghost" data-a="denyVisit">No</button></div></div>`;
+ const nx=S.refs.find(x=>x.pid==='P1'&&x.parent===r.id);
+ return `<div class="hdr"><div class="row"><div><div class="hi">Good morning,</div><div class="nm">${p.name} 👋</div></div><span class="sp"></span><button class="bell" data-tab="msgs" aria-label="Messages, ${unread}">🔔${unread?'<i></i>':''}</button></div><div class="brandline">turn<em>ly</em> <span>SKIP THE WAIT</span></div><div class="search">🔍 <span>Search doctors, clinics, specialties…</span></div></div>
+ <div class="pad">${card}${nx?`<div class="mini mt8">📅 Next follow-up booked: <b>${esc(nx.slot)}</b></div>`:''}
+ <div class="tiles mt">${[['📅','Book Appointment','Find & book a slot','goBook','#E3F3F5'],['📋','My Appointments','View & manage','tab:appts','#DCF7EF'],['🎫','Live Queue','Track your turn','tab:queue','#FFF2DE'],['🔔','Reminders','SMS & WhatsApp','tab:msgs','#F0EAFC']].map(([i,t,s,a,c])=>`<button class="tile" ${a.startsWith('tab:')?`data-tab="${a.slice(4)}"`:`data-a="${a}"`}><span class="ti" style="background:${c}">${i}</span><b>${t}</b><small>${s}</small></button>`).join('')}</div>
+ <div class="sec"><h3>Your care journey</h3></div><div class="wcard">${journey(r)}<div class="res"><div class="small muted">${esc(r.source)} · ${esc(r.created)}</div><b>${esc(r.test)}: ${esc(r.value)}</b> <span class="pill p-amber">${esc(r.flag)}</span><p>${esc(plain(r))}</p>${r.reviewNote&&r.status!=='Awaiting review'?`<p><b>Doctor’s note:</b> ${esc(r.reviewNote)}</p>`:''}</div></div></div>`}
+function pBook(){const r=mainRef();if(!['Accepted'].includes(r.status))return appBar('Book Follow-up')+`<div class="pad"><div class="wcard">${r.status==='Awaiting review'?'You can book once the doctor has reviewed your referral.':'Nothing to book right now.'}</div></div>`;
+ const lim=WINDOW_DAYS[r.window];const ds=U.sel.date,tm=U.sel.time;
+ const dates=[0,1,2,3,4].map(o=>{const d=new Date(2026,10,18+S.day+o);return{o,dow:DAYS[d.getDay()].toUpperCase(),n:d.getDate(),ok:o<=lim}});
+ const times=ds==null?[]:ds===0?[['live','Join live queue now'],['14:00','2:00 PM'],['15:30','3:30 PM']]:[['09:30','9:30 AM'],['10:00','10:00 AM'],['10:30','10:30 AM'],['11:00','11:00 AM'],['11:30','11:30 AM'],['12:00','12:00 PM']];
+ return appBar('Book Follow-up')+`<div class="pad"><div class="lbl">RECOMMENDED FOR YOU</div><div class="doc on"><span class="av">👩‍⚕️</span><div><b>Dr Farah Siddiqui</b><small>Antenatal · Gulshan Family Clinic</small><small class="g">✓ Accepted your referral · 2.1 km</small></div><span class="selp">Selected</span></div>
+ <div class="why-box">💡 <b>Why this clinic?</b> It offers antenatal care, can see you within ${r.window.replace('Within ','')}, and is the closest (2.1 km).</div>
+ <div class="lbl">CHOOSE DATE <span class="hintx">Doctor asked: ${r.window.toLowerCase()}</span></div><div class="dates">${dates.map(d=>`<button class="date ${ds===d.o?'on':''}" ${d.ok?`data-date="${d.o}"`:'disabled'}><small>${d.dow}</small><b>${d.n}</b>${d.o===0?'<i>today</i>':''}</button>`).join('')}</div>
+ ${ds!=null?`<div class="lbl">CHOOSE TIME SLOT</div><div class="times">${times.map(([k,l])=>`<button class="time ${tm===k?'on':''} ${k==='live'?'wide':''}" data-time="${k}">${k==='live'?'⚡ ':''}${l}</button>`).join('')}</div>`:''}
+ <div class="lbl">REASON FOR VISIT</div><div class="reason">Follow-up: ${esc(r.test.toLowerCase())} ${esc(r.value)} at screening</div>
+ <button class="cbtn" data-a="book" ${ds!=null&&tm?'':'disabled'}>Confirm Booking →</button></div>`}
+function pConfirmed(){const r=mainRef();const live=r.status==='In queue';
+ return appBar(live?'Token Confirmed':'Booking Confirmed')+`<div class="pad center"><div class="party">🎉</div><h2 class="ttl">${live?'You’re in the queue!':'You’re booked!'}</h2><p class="muted small">${live?'Track your queue live and we’ll tell you when to leave home.':'We’ll remind you before your visit.'}</p>
+ <div class="ticket"><div class="tk-h">GULSHAN FAMILY CLINIC · ANTENATAL</div><div class="tk-n">${r.token}</div><b>Dr Farah Siddiqui</b><span class="chip">🤰 Priority: expecting mother</span>
+ <dl><dt>Date</dt><dd>${esc(r.slot.split(',')[0])}${live?', '+dayName():''}</dd><dt>Time</dt><dd>${live?'Live queue':esc(r.slot.split(', ').slice(1).join(', '))}</dd><dt>Status</dt><dd class="g">✓ Confirmed</dd></dl></div>
+ <div class="wcard left mt"><b>Reminders we’ll send</b><ul class="rl">${(live?['When 2 patients are ahead: time to come in','When it’s your turn','If you miss it: a message to rebook, then your health worker is told']:r.rem).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+ <div class="row mt">${live?'<button class="cbtn" data-tab="queue">🎫 Track Live</button>':'<button class="cbtn" data-tab="home">Back to Home</button>'}</div></div>`}
+function pQueue(){const r=mainRef();const q=S.queue.find(x=>x.ref===r.id&&['Waiting','With doctor'].includes(x.status));
+ if(!q)return appBar('Live Queue')+`<div class="pad"><div class="wcard center"><div class="party">🎫</div><b>You’re not in a queue right now</b><p class="muted small">${r.status==='Accepted'?'Book your follow-up to get a token.':r.status==='Booked'?`Your visit is on ${esc(r.slot)}.`:'Your next token will appear here.'}</p>${r.status==='Accepted'?'<button class="cbtn" data-a="goBook">Book follow-up</button>':''}</div></div>`;
+ const serving=S.queue.find(x=>x.status==='With doctor');const seen=S.queue.filter(x=>x.status==='Seen').length;const tot=S.queue.filter(x=>x.status!=='No-show').length;
+ if(q.status==='With doctor')return appBar('Live Queue')+`<div class="pad"><div class="turn">🔔 <div><b>It’s Your Turn!</b><small>Please go to Room 3, Dr Farah Siddiqui</small></div></div><div class="nowcard"><small>NOW BEING SEEN</small><div class="nn">${q.token}</div><span>Dr Farah Siddiqui · Gulshan Family Clinic</span></div></div>`;
+ const e=estimate(q.token);const o=ordered();const mine=o.findIndex(x=>x.token===q.token);
+ const chips=[...S.queue.filter(x=>x.status==='Seen').slice(-1).map(x=>({t:x.token,c:'done'})),...(serving?[{t:serving.token,c:'srv'}]:[]),...o.slice(0,mine+2).map(x=>({t:x.token,c:x.token===q.token?'me':''}))].slice(-6);
+ return appBar('Live Queue')+`<div class="pad"><div class="nowcard"><small>NOW BEING SEEN</small><div class="nn">${serving?serving.token:'—'}</div><span>Dr Farah Siddiqui · Gulshan Family Clinic</span></div>
+ ${e.k===0?`<div class="alert-p">⚡ <div><b>You’re next! ${q.here?'Please stay near Room 3':'Head to the clinic now'}</b><small>${q.here?'You’ll be called in a few minutes.':'~15 min drive · leave immediately.'}</small></div></div>`:q.here?`<div class="alert-g">✅ <div><b>You’ve checked in</b><small>Stay nearby. We’ll message you when 2 patients are ahead.</small></div></div>`:`<div class="alert-g">🚗 <div><b>Leave home in about ${Math.max(0,e.lo-15)} min</b><small>~15 min drive to Gulshan Family Clinic</small></div></div>`}
+ <div class="wcard"><div class="row"><b>Queue Progress</b><span class="sp"></span><span class="muted">${seen} / ${tot}</span></div><div class="prog"><span style="width:${Math.round(seen/tot*100)}%"></span></div><div class="trio"><div><b>${seen}</b><small>Seen</small></div><div><b class="t">${q.token}</b><small>Your Token</small></div><div><b>${e.k}</b><small>Ahead</small></div></div></div>
+ <div class="wcard ai"><div class="row"><div><div class="ail">✨ AI WAIT ESTIMATE</div><div class="aiv">${e.lo}–${e.hi} min</div></div><span class="sp"></span>${boost(q)?'<span class="chip">🤰 Priority</span>':''}</div>
+ <details ${U.sel.why===false?'':'open'}><summary>Why this estimate?</summary><ul>${e.why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul></details></div>
+ <div class="wcard"><b>Your Position</b><div class="pos">${chips.map((c,i)=>`<span class="pc ${c.c}">${c.t}${c.c==='me'?'<small>YOU</small>':c.c==='srv'?'<small>NOW</small>':''}</span>`).join('')}</div></div>
+ <div class="acts">${q.here?'<button class="ab" data-a="soon">📤 Share</button>':'<button class="ab" data-a="checkin">📍 I’ve arrived</button>'}<button class="ab" data-a="soon">📊 Peak Hours</button><button class="ab red" data-a="soon">✕ Cancel</button></div>
+ <div class="map"><div class="mapline"><i class="a"></i><span>🚗 ~15 min</span><i class="b">🏥</i></div><div class="mapft">📍 <b>Gulshan Family Clinic</b><span class="sp"></span><span class="lnk">Directions →</span></div></div>
+ <button class="demo-btn" data-a="wait10">Demo: 10 minutes pass</button></div>`}
+function pAppts(){const mine=myRefs().filter(r=>r.slot||r.status==='Completed');const up=mine.filter(r=>['Booked','In queue','With doctor'].includes(r.status));const past=mine.filter(r=>['Completed','Missed'].includes(r.status));const t=U.sel.at||'up';const l=t==='up'?up:past;
+ return appBar('My Appointments')+`<div class="seg">${[['up','Upcoming'],['past','Past']].map(([k,n])=>`<button class="${t===k?'on':''}" data-at="${k}">${n}</button>`).join('')}</div><div class="pad">${l.length?l.map(r=>`<div class="wcard left"><div class="row"><div><b>Dr Farah Siddiqui</b><div class="small muted">Antenatal · Gulshan Family Clinic</div></div><span class="sp"></span>${r.status==='Completed'?`<span class="pill p-teal">${r.visit&&r.visit.patient?'Visit confirmed':'Seen'}</span>`:r.status==='Missed'?'<span class="pill p-red">Missed</span>':'<span class="pill p-teal">Confirmed</span>'}</div><div class="meta2">📅 ${esc(r.slot||'')} &nbsp; 🎫 ${r.token||''}</div>${r.outcome?`<div class="small mt8"><b>Outcome:</b> ${esc(r.outcome)}</div>`:''}${r.status==='Completed'&&!r.visit.patient?'<div class="row mt8"><button class="cbtn sm" data-a="confirmVisit">Yes, I saw the doctor</button><button class="ab sm" data-a="denyVisit">No</button></div>':''}${['In queue','With doctor'].includes(r.status)?'<button class="cbtn sm mt8" data-tab="queue">🎫 Track</button>':''}</div>`).join(''):`<div class="wcard center muted">No ${t==='up'?'upcoming':'past'} appointments.</div>`}</div>`}
+function pMsgs(){const m=S.msgs.filter(x=>x.pid==='P1').slice().reverse();return appBar('Reminders','home')+`<div class="pad"><p class="small muted" style="margin-top:0">SMS and WhatsApp messages (simulated in this demo).</p>${m.map(x=>`<div class="msg"><span class="ch ${x.ch}">${x.ch==='wa'?'WA':x.ch==='sms'?'SMS':'APP'}</span><div><div>${esc(x.text)}</div><time>${esc(x.at)}</time></div></div>`).join('')}</div>`}
+function pProfile(){const c=S.pconsent,p=P('P1');return appBar('Profile')+`<div class="pad"><div class="wcard row"><span class="av">👩</span><div><b>${p.name}</b><div class="small muted">${p.phone} · ${p.area}</div><span class="chip">🤰 Expecting mother · ${p.preg} weeks</span></div></div>
+ <div class="sec"><h3>Who can see my health information</h3></div><div class="wcard left grid" style="gap:14px">
+ <label class="chk"><input type="checkbox" data-consent="clinic" ${c.clinic?'checked':''}><span><b>Gulshan Family Clinic</b> (Dr Farah Siddiqui)<br><small class="muted">Sees your screening result and visit notes to treat you.</small></span></label>
+ <label class="chk"><input type="checkbox" data-consent="worker" ${c.worker?'checked':''}><span><b>Nasreen Akhtar</b>, your health worker<br><small class="muted">Sees whether you booked and attended, not the doctor’s notes.</small></span></label>
+ <div class="small muted">You agreed to share your screening result on 17 Nov, 4:10 pm. Turnly never shares your information with other clinics, employers or advertisers. Other patients see only your token number, never your name.</div></div>
+ <button class="tile wide mt" data-tab="msgs"><span class="ti" style="background:#F0EAFC">🔔</span><b>Reminders and messages</b></button></div>`}
+
+// ===================== panels (doctor, health worker) =====================
+function panelHead(title,pillTxt){return `<div class="phead"><span class="logo">${LOGO}</span><div><div class="word">turn<em>ly</em></div><div class="pt">${title}</div><div class="tag">SKIP THE WAIT. GO ON TIME.</div></div><span class="sp"></span>${pillTxt?`<span class="livep"><i></i>${pillTxt}</span>`:''}</div>`}
+function vDoctor(){const tab=U.tab||'queue';const pend=S.refs.filter(r=>r.clinic==='C1'&&r.status==='Awaiting review').length;const w=S.queue.filter(q=>q.status==='Waiting').length;
+ const tabs=[['queue','🩺 Today’s Queue',w],['review','📥 Referrals to Review',pend],['followups','📋 Follow-ups',S.refs.filter(r=>r.clinic==='C1').length]];
+ return `<div class="panel">${panelHead('Hospital Queue Panel · Gulshan Family Clinic · Dr Farah Siddiqui',`Live · ${w} left`)}<div class="pbody"><div class="ptabs">${tabs.map(([k,l,n])=>`<button class="${tab===k?'on':''}" data-tab="${k}">${l} <b>${n}</b></button>`).join('')}</div>${tab==='review'?dReview():tab==='queue'?dQueue():trackerTable(S.refs.filter(r=>r.clinic==='C1'),'doctor')}</div><div class="pfoot">Turnly · Gulshan Family Clinic · ${esc(nowStr())}</div></div>`}
+function dReview(){const l=S.refs.filter(r=>r.clinic==='C1'&&r.status==='Awaiting review');
+ return `<div class="banner">🩺 <b>Turnly suggests, you decide.</b> Each referral shows the screening result, the suggested follow-up window and why. Nothing is booked until you accept it.</div>
+ ${l.length?l.map(r=>{const p=P(r.pid);return `<div class="pcard"><div class="row"><span class="av">${p.preg?'🤰':'🧑'}</span><div><h3>${esc(p.name)}</h3><div class="small muted">${p.age} yrs${p.preg?` · ${p.preg} weeks pregnant`:''}${p.chronic.length?' · '+p.chronic.join(', '):''} · ${esc(p.phone||'')}</div></div><span class="sp"></span>${pill('Awaiting review')}</div>
+ <div class="g2 mt"><div><div class="small muted">${esc(r.source)} · by ${esc(r.by)}</div><div class="bigres">${esc(r.test)}: ${esc(r.value)}</div><div class="row mt8">${pill(r.flag,'p-amber')} ${r.tags.map(tagPill).join(' ')}</div><div class="small muted mt8">🔒 Consent to share recorded ${esc(r.consent)}</div></div>
+ <div class="sugg"><div class="small muted">✨ Turnly suggests</div><b>${esc(r.service)} · ${esc(r.window)}</b><div class="small mt8">${esc(r.why||triageWhy(r))}</div></div></div>
+ <div class="row mt"><button class="btn mint" data-review="${r.id}">Review and decide</button></div></div>`}).join(''):`<div class="pcard muted">No referrals waiting. New ones from health workers appear here.</div>`}`}
+function triageWhy(r){return r.value==='262 mg/dL'?'A random blood sugar of 200 mg/dL or more suggests diabetes and needs a follow-up within 7 days.':''}
+function dQueue(){const o=ordered();const cur=S.queue.find(q=>q.status==='With doctor');const seen=S.queue.filter(q=>q.status==='Seen').length;const{a}=stats();
+ const all=S.queue.slice();
+ return `<div class="calling"><div class="cl">CURRENTLY CALLING</div>${cur?`<div class="cn">${cur.token}</div><div class="cnm">${esc(P(cur.pid).name)}</div><div class="row center-row">${tagsFor(P(cur.pid)).map(tagPill).join(' ')}<span class="dchip">🩺 Dr Farah Siddiqui · OPD</span></div>${cur.ref?`<div class="small muted mt8">Referral ${cur.ref}: ${esc(R(cur.ref).test)} ${esc(R(cur.ref).value)} · ${esc(R(cur.ref).reviewNote||'')}</div>`:''}`:`<div class="cn" style="color:var(--line)">—</div><div class="cnm muted">No one with you</div>`}
+ <div class="cacts">${cur?`<button class="pv" data-finish="${cur.token}">✓ Finish visit</button>`:''}<button class="callnext" data-a="callNext" ${cur||!o.length?'disabled':''}>📢 Call Next Patient${o.length&&!cur?` (${o[0].token})`:''}</button></div>${cur?'<div class="tiny muted mt8">Finish the current visit to call the next patient.</div>':''}</div>
+ <div class="stats3"><div class="s on"><b>${cur?cur.token:'—'}</b><small>Current #</small></div><div class="s"><b>${o.length}</b><small>Remaining</small></div><div class="s"><b>${seen}</b><small>Seen Today</small></div><div class="s"><b>${a.toFixed(1)}</b><small>Avg min / patient</small></div></div>
+ <div class="pcard"><div class="row"><h3>Up next · Turnly’s suggested order</h3><span class="sp"></span><span class="tiny muted">Priority patients move up at most 2 places</span></div><div class="tw mt8"><table><thead><tr><th>#</th><th>Token</th><th>Patient</th><th>Priority</th><th>Arrived</th><th>AI wait</th><th></th></tr></thead><tbody>${o.length?o.map((q,i)=>{const p=P(q.pid),e=estimate(q.token);return `<tr><td>${i+1}</td><td><b class="tok">${q.token}</b></td><td>${esc(p.name)}<div class="tiny muted">${q.here?'Checked in':'On the way'}${q.ref?' · referral '+q.ref:''}</div></td><td>${tagsFor(p).map(tagPill).join(' ')||'<span class="muted small">—</span>'}${q.call?' <span class="pill p-amber">Your choice</span>':''}</td><td class="small">${q.arr}</td><td class="small">${e.lo}–${e.hi} min</td><td><div class="row nowrap">${i>0?`<button class="btn alt sm" data-callfirst="${q.token}">Call first</button>`:''}<button class="btn warn sm" data-noshow="${q.token}">No-show</button></div></td></tr>`}).join(''):'<tr><td colspan="7" class="muted">No one waiting.</td></tr>'}</tbody></table></div></div>
+ <div class="pcard"><div class="row"><h3>Today’s Patients — ${all.length} Total</h3><span class="sp"></span><span class="muted small">${seen} / ${all.length} seen</span></div><div class="pgrid">${all.map(q=>{const p=P(q.pid),t=tagsFor(p);return `<div class="pg ${q.status==='Seen'?'seen':q.status==='With doctor'?'cur':q.status==='No-show'?'ns':''}"><b>${q.token}</b><small>${esc(p.name.split(' ')[0])}</small>${t.includes('Expecting mother')?'<i title="Expecting mother">🤰</i>':t.includes('Chronic care')?'<i title="Chronic care">♥</i>':''}</div>`}).join('')}</div><div class="legend tiny muted mt8"><span class="lg seen"></span>Seen <span class="lg cur"></span>With doctor <span class="lg"></span>Waiting <span class="lg ns"></span>No-show</div></div>`}
+function vWorker(){const tab=U.tab||'screen';const al=S.alerts.filter(a=>!a.done).length;const tabs=[['screen','📝 New Screening',null],['tracker','📋 Follow-up Tracker',S.refs.length],['alerts','🔔 Alerts',al]];
+ return `<div class="panel">${panelHead('Community Health Panel · Gulshan Block 6 · Nasreen Akhtar',null)}<div class="pbody">${funnel()}<div class="ptabs mt">${tabs.map(([k,l,n])=>`<button class="${tab===k?'on':''}" data-tab="${k}">${l}${n!=null?` <b>${n}</b>`:''}</button>`).join('')}</div>${tab==='screen'?wScreen():tab==='tracker'?trackerTable(S.refs,'worker'):wAlerts()}</div><div class="pfoot">Turnly · Gulshan Block 6 · ${esc(nowStr())}</div></div>`}
+function funnel(){const refs=S.refs;const scr=refs.length+S.screenedNormal;const ref=refs.length;const bk=refs.filter(r=>r.slot).length;const att=refs.filter(r=>['With doctor','Completed'].includes(r.status)).length;const closed=refs.filter(r=>r.status==='Completed').length;
+ return `<div class="funnel">${[['Screened',scr],['Referred',ref],['Booked',bk],['Attended',att],['Follow-up complete',closed]].map(([l,v],i)=>`<div class="s ${i===4?'on':''}"><b>${v}</b><small>${l}</small><div class="bar"><span style="width:${Math.round(v/scr*100)}%"></span></div></div>`).join('')}</div>`}
+function wScreen(){const f=U.sel.form||(U.sel.form={name:'',phone:'',age:'',preg:'',chronic:[],test:'Blood pressure',v:{},consent:false});const p=+f.preg||0;const t=triage(f.test,f.v,p);
+ if(U.sel.step===2&&t&&t.window)return wClinics(f,t);
+ const fields=f.test==='Blood pressure'?`<label class="f">Systolic (top)<input class="inp" data-v="sys" inputmode="numeric" value="${esc(f.v.sys||'')}" placeholder="e.g. 150"></label><label class="f">Diastolic (bottom)<input class="inp" data-v="dia" inputmode="numeric" value="${esc(f.v.dia||'')}" placeholder="e.g. 98"></label>`:`<label class="f">${f.test==='Blood sugar (random)'?'Result (mg/dL)':f.test==='Haemoglobin'?'Result (g/dL)':'Weeks of pregnancy'}<input class="inp" data-v="val" inputmode="decimal" value="${esc(f.v.val||'')}"></label>`;
+ return `<div class="g2 wide"><div class="pcard"><div class="row"><h3>Record a screening result</h3><span class="sp"></span><button class="btn alt sm" data-a="sample">Fill sample</button></div><div class="grid mt" style="gap:12px">
+ <div class="g2"><label class="f">Patient name<input class="inp" data-f="name" value="${esc(f.name)}"></label><label class="f">Mobile<input class="inp" data-f="phone" inputmode="tel" value="${esc(f.phone)}" placeholder="03XX-XXXXXXX"></label></div>
+ <div class="g2"><label class="f">Age<input class="inp" data-f="age" inputmode="numeric" value="${esc(f.age)}"></label><label class="f">Weeks pregnant (if pregnant)<input class="inp" data-f="preg" inputmode="numeric" value="${esc(f.preg)}" placeholder="Leave empty if not"></label></div>
+ <div class="f">Long-term conditions<div class="row">${['Diabetes','Hypertension','Heart disease','TB'].map(c=>`<label class="chk small"><input type="checkbox" data-chronic="${c}" ${f.chronic.includes(c)?'checked':''}>${c}</label>`).join('')}</div></div>
+ <label class="f">Screening test<select class="inp" data-f="test">${['Blood pressure','Blood sugar (random)','Haemoglobin','Antenatal check'].map(x=>`<option ${x===f.test?'selected':''}>${x}</option>`).join('')}</select></label>
+ <div class="g2">${fields}</div>
+ <label class="chk"><input type="checkbox" data-f="consent" ${f.consent?'checked':''}><span>🔒 The patient agrees to share this result with the clinic Turnly suggests, and to get SMS or WhatsApp reminders.</span></label><div class="err" id="serr"></div></div></div>
+ <div class="pcard"><h3>Result</h3><div id="tri" class="mt8">${triBox(t)}</div></div></div>`}
+function triBox(t){if(!t)return'<p class="muted" style="margin:0">Enter the result to see what it means.</p>';
+ return `<div class="bigres">${esc(t.val)}</div><div class="mt8">${pill(t.flag,t.window?(t.window==='Same day'?'p-red':'p-amber'):'p-teal')}</div>
+ <div class="sugg mt">${t.window?`<div class="small muted">✨ Suggested follow-up</div><b>${t.service} · ${t.window}</b>`:'<b>No referral needed</b>'}<div class="small mt8"><b>Why:</b> ${esc(t.why)}</div></div>
+ <div class="tiny muted mt8">Sample rules set by the clinic. A doctor reviews every referral.</div>
+ ${t.window?`<button class="btn mint block mt" data-a="toClinics">Find the right clinic →</button>`:`<button class="btn alt block mt" data-a="saveNormal">Save result</button>`}`}
+function rankClinics(t){const need=WINDOW_DAYS[t.window];return Object.entries(CLINICS).map(([id,c])=>{const has=c.services.includes(t.service);const slotDays=c.next==='Today'?0:1;const fits=slotDays<=need;const wait=id==='C1'?Math.round((ordered().length+1)*stats().a):c.wait;
+ const score=(has?0:100)+(fits?0:50)+c.km*2+wait/10;const why=[has?`Offers ${t.service.toLowerCase()} care`:`Does not offer ${t.service.toLowerCase()} care`,`${c.km} km from the patient`,`Next slot ${c.next.toLowerCase()}${fits?'':` (too late for “${t.window.toLowerCase()}”)`}`,`Current wait about ${wait} min`];return{id,c,has,fits,score,why}}).sort((a,b)=>a.score-b.score)}
+function wClinics(f,t){const rk=rankClinics(t);const sel=U.sel.clinic||rk.find(x=>x.has&&x.fits)?.id;U.sel.clinic=sel;
+ return `<div class="pcard"><div class="row"><h3>Choose the clinic for ${esc(f.name)}</h3><span class="sp"></span>${pill(t.service+' · '+t.window,'p-amber')}</div><div class="grid mt" style="gap:10px">
+ ${rk.map((x,i)=>`<button class="clinic ${x.id===sel?'on':''} ${x.has&&x.fits?'':'na'}" ${x.has&&x.fits?`data-clinic="${x.id}"`:'disabled'}><div class="row"><span class="rank">${i+1}</span><span class="av sm">🏥</span><div><b>${x.c.name}</b> <span class="small muted">${x.c.area}</span>${i===0?' <span class="pill p-teal">Best match</span>':''}</div></div><div class="small muted mt8">${x.why.join(' · ')}</div></button>`).join('')}
+ <div class="tiny muted">✨ Ranked by: offers the right service, can see the patient in time, distance, then current wait. The demo doctor login is at Gulshan Family Clinic.</div>
+ <div class="row"><button class="btn alt" data-a="backScreen">← Back</button><span class="sp"></span><button class="btn mint" data-a="sendRef">Send referral for doctor review →</button></div></div></div>`}
+const ORD={'Missed':0,'Awaiting review':1,'Accepted':2,'Booked':3,'In queue':4,'With doctor':5,'Completed':6};
+function trackerTable(l,who){const rows=l.slice().sort((a,b)=>(ORD[a.status]??9)-(ORD[b.status]??9));
+ return `<div class="pcard"><div class="row"><h3>${who==='doctor'?'Referred patients':'Follow-up tracker'}</h3><span class="sp"></span><span class="tiny muted">Every referral is tracked until the visit is confirmed</span></div><div class="tw mt8"><table><thead><tr><th>Patient</th><th>Result</th><th>Follow-up</th><th>Status</th><th>Visit check</th><th></th></tr></thead><tbody>${rows.map(r=>{const p=P(r.pid);const vc=r.visit?`${r.visit.clinic?'✅':'⬜'} Clinic<br>${r.visit.patient?'✅':'⬜'} Patient`:'—';
+ return `<tr><td><b>${esc(p.name)}</b><div class="tiny muted">${r.id}${r.tags.length?' · '+r.tags.join(', '):''}</div></td><td class="small">${esc(r.test)}<br><b>${esc(r.value)}</b></td><td class="small">${esc(r.service)}<br>${esc(r.slot||r.window)}</td><td>${pill(r.status)}</td><td class="small">${vc}</td><td><div class="row nowrap"><button class="btn alt sm" data-hist="${r.id}">History</button>${who==='worker'&&['Missed','Accepted'].includes(r.status)&&r.pid!=='P1'?`<button class="btn mint sm" data-bookfor="${r.id}">Book for patient</button>`:''}${who==='worker'&&r.status==='Missed'?`<button class="btn alt sm" data-call="${r.id}">Log call</button>`:''}</div></td></tr>`}).join('')}</tbody></table></div></div>`}
+function wAlerts(){const l=S.alerts.slice().reverse();return `<div class="pcard"><h3>Alerts</h3><div class="mt8">${l.length?l.map(a=>`<div class="msg"><span class="ch sms">!</span><div style="flex:1"><div>${esc(a.text)}</div><time>${esc(a.at)}</time>${a.done?' <span class="pill p-teal">Done</span>':''}</div>${a.ref&&!a.done?`<button class="btn alt sm" data-hist="${a.ref}">Open</button>`:''}</div>`).join(''):'<p class="muted">No alerts.</p>'}</div></div>`}
+
+// ===================== modals =====================
+function modal(h){$('#modal').innerHTML=h;$('#scrim').classList.add('on');setTimeout(()=>{const f=$('#modal select,#modal textarea,#modal button');f&&f.focus()},30)}
+function close(){$('#scrim').classList.remove('on')}
+function reviewModal(id){const r=R(id),p=P(r.pid);
+ modal(`<div class="hd"><h2>Decide: ${esc(p.name)}</h2><button class="btn alt sm x" data-a="close" aria-label="Close">✕</button></div><div class="bd">
+ <div class="sugg small"><b>${esc(r.test)}: ${esc(r.value)}</b> · Turnly suggests <b>${esc(r.window)}</b> at ${esc(r.service)}</div>
+ <label class="f">Your decision<select class="inp" id="dv"><option value="accept">Accept</option><option value="redirect">Send to a different service</option><option value="decline">Decline (no follow-up needed)</option></select></label>
+ <div id="dvAccept" class="grid" style="gap:12px"><label class="f">See the patient<select class="inp" id="dw">${Object.keys(WINDOW_DAYS).map(w=>`<option ${w===r.window?'selected':''}>${w}</option>`).join('')}</select></label>
+ <div class="f">Priority<div class="row">${['Expecting mother','Chronic care','Elderly'].map(t=>`<label class="chk small"><input type="checkbox" class="dt" value="${t}" ${r.tags.includes(t)?'checked':''}>${t}</label>`).join('')}</div></div></div>
+ <label class="f" id="dvSvc" style="display:none">Service<select class="inp" id="ds">${CLINICS.C1.services.map(s=>`<option ${s===r.service?'selected':''}>${s}</option>`).join('')}</select></label>
+ <label class="f">Note for the patient and health worker<textarea class="inp" id="dn" rows="2" placeholder="e.g. Bring your glucose readings"></textarea></label>
+ <div class="tiny muted">Your decision, and any change from Turnly’s suggestion, is recorded on the referral.</div></div>
+ <div class="ft"><button class="btn alt" data-a="close">Cancel</button><button class="btn mint" data-decide="${id}">Confirm decision</button></div>`);
+ $('#dv').addEventListener('change',e=>{$('#dvAccept').style.display=e.target.value==='decline'?'none':'';$('#dvSvc').style.display=e.target.value==='redirect'?'':'none'})}
+function finishModal(token){const q=S.queue.find(x=>x.token===token),p=P(q.pid);
+ modal(`<div class="hd"><h2>Finish visit: ${esc(p.name)}</h2><button class="btn alt sm x" data-a="close" aria-label="Close">✕</button></div><div class="bd">
+ <label class="f">Outcome<textarea class="inp" id="fo" rows="2">${q.ref&&R(q.ref).test==='Blood pressure'?'BP 146/94 on repeat. Urine protein negative. Started on medication; home BP monitoring.':'Examined and treated.'}</textarea></label>
+ <label class="f">Next follow-up<select class="inp" id="fn"><option value="14">In 2 weeks</option><option value="28" selected>In 4 weeks</option><option value="0">No follow-up needed</option></select></label>
+ <div class="tiny muted">The patient is asked to confirm the visit, and reminders for the next follow-up are set automatically.</div></div>
+ <div class="ft"><button class="btn alt" data-a="close">Cancel</button><button class="btn mint" data-done="${token}">Save and finish</button></div>`)}
+function histModal(id){const r=R(id),p=P(r.pid);modal(`<div class="hd"><h2>${esc(p.name)} · ${r.id}</h2><button class="btn alt sm x" data-a="close" aria-label="Close">✕</button></div><div class="bd">${journey(r)}<div class="small"><b>${esc(r.test)}: ${esc(r.value)}</b> · ${esc(r.service)} · ${esc(r.window)}${r.reviewNote?`<br>Doctor’s note: ${esc(r.reviewNote)}`:''}${r.outcome?`<br>Outcome: ${esc(r.outcome)}`:''}</div><div>${r.log.slice().reverse().map(l=>`<div class="msg"><div><div class="small">${esc(l[1])}</div><time>${esc(l[0])}</time></div></div>`).join('')}</div></div>`)}
+function slotModal(id){const r=R(id);modal(`<div class="hd"><h2>Book for ${esc(P(r.pid).name)}</h2><button class="btn alt sm x" data-a="close" aria-label="Close">✕</button></div><div class="bd"><label class="f">Time<select class="inp" id="bs"><option value="today">Today (join the live queue)</option><option value="tom">Tomorrow, 10:00 am</option></select></label><div class="tiny muted">The patient gets an SMS with the token and reminders.</div></div><div class="ft"><button class="btn alt" data-a="close">Cancel</button><button class="btn mint" data-dobook="${id}">Book</button></div>`)}
+// patient-app extra clicks
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+ if(d.date!=null){U.sel.date=+d.date;U.sel.time=null;render();return}
+ if(d.time){U.sel.time=d.time;render();return}
+ if(d.at){U.sel.at=d.at;render();return}
+ if(d.a==='goBook'){U.tab='book';U.sel.date=null;U.sel.time=null;U.keepScroll=false;render()}
+ if(d.a==='soon')toast('Not part of this demo');
+ if(d.tab)U.keepScroll=false;
+},true);
+// ===================== actions =====================
+function joinQueue(r,here){const t='#'+S.nextToken++;r.token=t;S.queue.push({token:t,pid:r.pid,status:'Waiting',arr:hm(S.min).replace(/ (am|pm)/,''),here:!!here,ref:r.id});r.status='In queue';return t}
+function book(r,off,time){if(off===0&&time==='live'){r.slot='Today';const t=joinQueue(r,false);log(r,`Booked for today, token ${t}. Joined the live queue.`);const e=estimate(t);msg(r.pid,'wa',`Turnly: You’re in today’s queue at ${CLINICS[r.clinic].name}. Token ${t}. Estimated wait ${e.lo}–${e.hi} min. We’ll tell you when to leave home.`);return}
+ const [hh,mm]=time.split(':').map(Number);r.slot=`${off===0?'Today':dayName(S.day+off)}, ${hm(hh*60+mm)}`;r.slotDay=S.day+off;r.slotMin=hh*60+mm;r.token='#'+S.nextToken++;r.status='Booked';r.rem=[off>0?`${dayName(S.day+off-1)}, 6:00 pm: reminder with your token`:'Today: reminder 2 hours before',`${off===0?'Today':dayName(S.day+off)}, 2 hours before: time to get ready`,'When 2 patients are ahead of you: time to come in','If you miss it: a message the next morning to rebook'];log(r,`Booked for ${r.slot}, token ${r.token}`);msg(r.pid,'wa',`Turnly: Booked for ${r.slot} at ${CLINICS[r.clinic].name} with Dr Farah Siddiqui. Your token is ${r.token}. We’ll remind you before your visit.`)}
+function finishCurrentIfNone(){}
+document.addEventListener('click',e=>{const t=e.target.closest('button,[data-login]');if(!t)return;const d=t.dataset;
+ if(d.login){U.sel.login=d.login;render();return}
+ if(d.tab){U.tab=d.tab;U.sel.step=null;render();window.scrollTo(0,0);return}
+ if(d.slot){U.sel.slot=d.slot;render();return}
+ if(d.clinic){U.sel.clinic=d.clinic;render();return}
+ if(d.review){reviewModal(d.review);return}
+ if(d.hist){histModal(d.hist);return}
+ if(d.bookfor){slotModal(d.bookfor);return}
+ if(d.dobook){const r=R(d.dobook);book(r,$('#bs').value==='today'?0:1,$('#bs').value==='today'?'live':'10:00');log(r,'Booked by Nasreen Akhtar on the patient’s behalf');S.alerts.forEach(a=>{if(a.ref===r.id)a.done=true});close();toast(`Booked. Token ${r.token}.`);render();return}
+ if(d.call){const r=R(d.call);log(r,'Nasreen called the patient: will rebook this week');toast('Call logged');render();return}
+ if(d.decide){const r=R(d.decide),v=$('#dv').value,note=$('#dn').value.trim();
+  if(v==='decline'){r.status='Declined';log(r,`Declined by Dr Farah Siddiqui${note?': '+note:''}`);msg(r.pid,'sms',`Turnly: Dr Farah reviewed your result. No clinic visit is needed now.${note?' Note: '+note:''}`)}
+  else{const w=$('#dw').value,tags=[...document.querySelectorAll('.dt:checked')].map(x=>x.value);const changed=w!==r.window;if(v==='redirect'){r.service=$('#ds').value}r.window=w;r.tags=tags;r.reviewNote=note||r.reviewNote;r.status='Accepted';
+   log(r,`Accepted by Dr Farah Siddiqui: ${w.toLowerCase()}, ${r.service}${tags.length?', priority: '+tags.join(', ').toLowerCase():''}${changed?' (changed from Turnly’s suggestion)':''}`);msg(r.pid,'wa',`Turnly: Dr Farah Siddiqui has asked to see you ${w.toLowerCase()}. Tap to choose a time and get your token.`);log(r,'Booking link sent to patient by WhatsApp')}
+  tick(3);close();toast(v==='decline'?'Referral declined':'Accepted. The patient got a booking link.');render();return}
+ if(d.finish){finishModal(d.finish);return}
+ if(d.done){const q=S.queue.find(x=>x.token===d.done);q.status='Seen';const dur=6+Math.round(Math.random()*3);S.durs.push(dur);tick(dur);const nx=+$('#fn').value,out=$('#fo').value.trim();
+  if(q.ref){const r=R(q.ref);r.status='Completed';r.visit={clinic:true,patient:false};r.outcome=out;log(r,'Seen by Dr Farah Siddiqui. Clinic confirmed the visit.');msg(r.pid,'app','Turnly: Did you see Dr Farah today? Tap Yes to confirm your visit.');
+   if(nx){const d2=Math.round(nx/7);const n={id:'R-'+S.ids++,pid:r.pid,parent:r.id,source:'Follow-up from visit '+r.id,by:'Dr Farah Siddiqui',test:r.test,value:r.value,flag:'Follow-up',window:'Within 14 days',service:r.service,clinic:'C1',status:'Booked',created:dayName(),consent:r.consent,tags:r.tags.slice(),slot:'',token:'#'+S.nextToken++,rem:['Day before: reminder with your token','2 hours before: time to get ready'],log:[[nowStr(),`Next follow-up booked by Dr Farah Siddiqui in ${d2} weeks`]]};n.slot=`In ${d2} weeks (${new Date(2026,10,18+S.day+nx).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}), 10:00 am`;S.refs.push(n);log(r,`Next follow-up booked: ${n.slot}`)}}
+  close();toast('Visit saved.');render();return}
+ if(d.noshow){const q=S.queue.find(x=>x.token===d.noshow);q.status='No-show';if(q.ref){const r=R(q.ref);r.status='Missed';log(r,'Marked no-show by the clinic');tick(1);msg(r.pid,'wa',`Turnly: We missed you at ${CLINICS[r.clinic].name} today. Your follow-up is important. Tap to choose a new time.`);log(r,'Reminder sent: rebook your visit');S.alerts.push({at:nowStr(),text:`${P(r.pid).name} missed a follow-up visit today (${r.test} ${r.value}). Reminder sent; if not rebooked in 2 days, please call.`,ref:r.id})}
+  toast('Marked no-show. Patient reminded; health worker alerted.');render();return}
+ if(d.callfirst){S.queue.forEach(x=>delete x.call);S.queue.find(x=>x.token===d.callfirst).call=true;toast('Moved to the front. Your choice overrides Turnly’s order.');render();return}
+ const a=d.a;if(!a)return;
+ if(a==='close')close();
+ if(a==='reset'){S=seed();U={role:U.role,tab:null,sel:{}};close();toast('Demo reset');render()}
+ if(a==='logout'){U={role:null,tab:null,sel:{login:U.role}};render()}
+ if(a==='book'){const r=mainRef();book(r,U.sel.date,U.sel.time);U.sel.date=null;U.sel.time=null;U.tab='confirmed';U.keepScroll=false;toast(`Booked. Your token is ${r.token}.`);render()}
+ if(a==='rebookMe'){const r=mainRef();r.status='Accepted';log(r,'Patient chose to rebook');U.tab='book';U.sel.date=null;U.sel.time=null;S.alerts.forEach(x=>{if(x.ref===r.id)x.done=true});render()}
+ if(a==='skipday'){const r=mainRef();S.day=r.slotDay;S.min=Math.max(9*60,(r.slotMin||600)-40);S.queue=S.queue.filter(q=>q.status==='Waiting'||q.status==='With doctor');const t=r.token;S.queue.push({token:t,pid:'P1',status:'Waiting',arr:'09:10',here:false,ref:r.id});r.status='In queue';log(r,'Appointment day. Joined the live queue.');msg('P1','wa',`Turnly: Today is your visit. Token ${t}. We’ll tell you when to leave home.`);U.tab='queue';render()}
+ if(a==='checkin'){const q=S.queue.find(x=>x.ref===mainRef().id&&x.status==='Waiting');q.here=true;log(R(q.ref),'Checked in at the clinic');toast('Checked in');render()}
+ if(a==='wait10'){const cur0=S.queue.find(q=>q.status==='With doctor');if(cur0&&cur0.pid==='P1'){toast('You are with the doctor. Switch to the doctor login to finish the visit.');return}tick(10);const cur=S.queue.find(q=>q.status==='With doctor');if(cur){cur.status='Seen';S.durs.push(8);if(cur.ref){const r=R(cur.ref);if(r.pid!=='P1'){r.status='Completed';r.visit={clinic:true,patient:true};log(r,'Seen')}}}const o=ordered();if(o[0]){const q=S.queue.find(x=>x.token===o[0].token);q.status='With doctor';delete q.call;if(q.ref&&R(q.ref).pid==='P1')msg('P1','app',`Turnly: It’s your turn. Please go to Room 3.`);else{const me=S.queue.find(x=>x.pid==='P1'&&x.status==='Waiting');if(me){const e=estimate(me.token);if(e&&e.k<=2)msg('P1','wa',`Turnly: ${e.k===0?'You are next':e.k===1?'1 patient is ahead of you':e.k+' patients are ahead of you'}. Please be at the clinic.`)}}if(q.ref)R(q.ref).status=R(q.ref).status==='In queue'?'With doctor':R(q.ref).status}render()}
+ if(a==='callNext'){const o=ordered();const q=S.queue.find(x=>x.token===o[0].token);q.status='With doctor';delete q.call;tick(1);if(q.ref){const r=R(q.ref);r.status='With doctor';log(r,'Called in by Dr Farah Siddiqui');msg(r.pid,'app','Turnly: It’s your turn. Please go to Room 3.')}const me=ordered()[0];if(me&&me.ref)msg(R(me.ref).pid,'wa','Turnly: You are next. Please be at the clinic.');render()}
+ if(a==='confirmVisit'){const r=myRefs().filter(x=>x.status==='Completed'&&x.visit&&!x.visit.patient).slice(-1)[0];r.visit.patient=true;log(r,'Patient confirmed the visit. Follow-up complete.');toast('Thank you. Your visit is confirmed.');render()}
+ if(a==='denyVisit'){const r=myRefs().filter(x=>x.status==='Completed').slice(-1)[0];log(r,'Patient says the visit did not happen: clinic asked to check');S.alerts.push({at:nowStr(),text:`${P(r.pid).name} says the visit did not happen, but the clinic marked it as seen. Please check.`,ref:r.id});toast('Thanks. We’ll check with the clinic.');render()}
+ if(a==='sample'){U.sel.form={name:'Sana Javed',phone:'0312-5550198',age:'29',preg:'31',chronic:[],test:'Blood pressure',v:{sys:'152',dia:'99'},consent:true};render()}
+ if(a==='toClinics'){const f=U.sel.form;const er=!f.name?'Add the patient’s name.':!/^03\d{2}-?\d{7}$/.test(f.phone)?'Add a valid mobile number (03XX-XXXXXXX).':!f.age?'Add the patient’s age.':!f.consent?'The patient must agree to share the result before you refer.':'';if(er){$('#serr').textContent=er;return}U.sel.step=2;U.sel.clinic=null;render()}
+ if(a==='backScreen'){U.sel.step=1;render()}
+ if(a==='saveNormal'){S.screenedNormal++;U.sel.form=null;toast('Result saved. No referral needed.');render()}
+ if(a==='sendRef'){const f=U.sel.form,p=+f.preg||0,t=triage(f.test,f.v,p);const pid='N'+S.ids;S.patients[pid]={name:f.name,age:+f.age,preg:p,chronic:f.chronic.slice(),phone:f.phone.slice(0,4)+'-•••-'+f.phone.slice(-4),area:'Gulshan-e-Iqbal'};
+  const r={id:'R-'+S.ids++,pid,source:'Screening camp, Gulshan Block 6',by:'Nasreen Akhtar',test:f.test,value:t.val,flag:t.flag,window:t.window,service:t.service,why:t.why,clinic:U.sel.clinic,status:'Awaiting review',created:dayName(),consent:`${dayName().split(' ').slice(1).join(' ')}, ${hm(S.min)}`,tags:tagsFor(S.patients[pid]),log:[]};
+  log(r,`Screened by Nasreen Akhtar. Patient consented to share the result.`);log(r,`Referral sent to ${CLINICS[r.clinic].name}`);S.refs.push(r);msg(pid,'sms',`Turnly: Your ${f.test.toLowerCase()} result was ${t.val}. Nasreen has referred you to ${CLINICS[r.clinic].name}.`);
+  U.sel.form=null;U.sel.step=1;U.tab='tracker';tick(2);toast(`Referral ${r.id} sent for doctor review`);render()}
+});
+document.addEventListener('submit',e=>{if(e.target.id==='lf'){e.preventDefault();const k=U.sel.login||'patient',L=LOGINS[k];const id=$('#lid').value.trim(),pin=$('#lpin').value.trim();if(id.toLowerCase()!==L.id.toLowerCase()||pin!==L.pin){$('#lerr').textContent=`Use the test login: ${L.id} with PIN ${L.pin}.`;return}U.role=k;U.tab=null;U.sel={};render();window.scrollTo(0,0)}});
+document.addEventListener('input',e=>{const t=e.target;const f=U.sel.form;if(!f)return;
+ if(t.dataset.f&&t.type!=='checkbox'&&t.tagName!=='SELECT'){f[t.dataset.f]=t.value;if(t.dataset.f==='preg')updTri()}
+ if(t.dataset.v){f.v[t.dataset.v]=t.value;updTri()}});
+function updTri(){const f=U.sel.form;const b=$('#tri');if(b)b.innerHTML=triBox(triage(f.test,f.v,+f.preg||0),+f.preg||0)}
+document.addEventListener('change',e=>{const t=e.target;const f=U.sel.form;
+ if(t.dataset.consent){S.pconsent[t.dataset.consent]=t.checked;toast(t.checked?'Sharing turned on':'Sharing turned off');save();return}
+ if(!f)return;if(t.dataset.f==='consent')f.consent=t.checked;if(t.dataset.f==='test'){f.test=t.value;f.v={};render()}if(t.dataset.chronic){f.chronic=t.checked?[...f.chronic,t.dataset.chronic]:f.chronic.filter(c=>c!==t.dataset.chronic)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+$('#scrim').addEventListener('click',e=>{if(e.target.id==='scrim')close()});
+render();
+</script>
+</body>
+</html>
